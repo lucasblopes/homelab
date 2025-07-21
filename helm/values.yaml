@@ -1,0 +1,14 @@
+env:
+  TZ: "America/Sao_Paulo"
+
+persistence:
+  homarrDatabase:
+    enabled: true
+    storageClassName: "default"
+    size: "1Gi"
+
+  service:
+    # -- Enable service
+    enabled: true
+    # -- Service type
+    type: LoadBalancer
