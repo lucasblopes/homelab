@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wolf
+  labels:
+    app: wolf
+  namespace: wolf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wolf
+  template:
+    metadata:
+      labels:
+        app: wolf
+    spec:
+      hostNetwork: true
+      containers:
+        - name: wolf
+          image: ghcr.io/games-on-whales/wolf:stable
+          # Auto cleanup command to avoid bugs
+          command:
+            - /bin/sh
+            - -c
+            - "echo 'Cleaning up old sockets...' &&rm -rf /tmp/sockets/* && /entrypoint.sh"
+          env:
+            - name: XDG_RUNTIME_DIR
+              value: "/tmp/sockets"
+            - name: NVIDIA_DRIVER_VOLUME_NAME
+              value: "nvidia-driver-vol"
+            - name: HOST_APPS_STATE_FOLDER
+              value: "/etc/wolf"
+          volumeMounts:
+            - name: wolf-config
+              mountPath: /etc/wolf
+              readOnly: false
+            - name: socket-dir
+              mountPath: /tmp/sockets
+              readOnly: false
+            - name: docker-socket
+              mountPath: /var/run/docker.sock
+              readOnly: false
+            - name: dev-dir
+              mountPath: /dev
+              readOnly: false
+            - name: udev-dir
+              mountPath: /run/udev
+              readOnly: false
+            - name: nvidia-driver-vol
+              mountPath: /usr/nvidia
+              readOnly: false
+          securityContext:
+            privileged: true
+      volumes:
+        - name: wolf-config
+          hostPath:
+            path: /etc/wolf
+            type: Directory
+        - name: socket-dir
+          hostPath:
+            path: /tmp/sockets
+            type: DirectoryOrCreate
+        - name: docker-socket
+          hostPath:
+            path: /var/run/docker.sock
+            type: Socket
+        - name: dev-dir
+          hostPath:
+            path: /dev
+            type: Directory
+        - name: udev-dir
+          hostPath:
+            path: /run/udev
+            type: Directory
+        - name: nvidia-driver-vol
+          persistentVolumeClaim:
+            claimName: nvidia-driver-pvc

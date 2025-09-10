@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wolf
+  namespace: wolf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wolf
+  template:
+    metadata:
+      labels:
+        app: wolf
+    spec:
+      hostNetwork: true
+      # The initContainer runs first to prepare the environment.
+      initContainers:
+        - name: nvidia-library-fix
+          image: ubuntu:22.04
+          command:
+            # - /bin/sh
+            # - -c
+            # # This command is now corrected to prevent line-wrapping errors.
+            # - >
+            #   find /usr/lib/x86_64-linux-gnu -name "libnvidia-*.so*" -exec ln -s {} /fixed-nvidia-libs/ \; &&
+            #   find /usr/lib/x86_64-linux-gnu -name "libnvcuvid.so*" -exec ln -s {} /fixed-nvidia-libs/ \; &&
+            #   find /usr/lib/x86_64-linux-gnu -name "libnvcuenc.so*" -exec ln -s {} /fixed-nvidia-libs/ \;
+          volumeMounts:
+            - name: nvidia-libs
+              mountPath: /fixed-nvidia-libs
+      # The main container definition starts here.
+      containers:
+        - name: wolf
+          image: ghcr.io/games-on-whales/wolf:stable
+          env:
+            - name: XDG_RUNTIME_DIR
+              value: "/tmp/sockets"
+            - name: LD_LIBRARY_PATH
+              value: "/fixed-nvidia-libs"
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+          volumeMounts:
+            - name: nvidia-libs
+              mountPath: /fixed-nvidia-libs
+              readOnly: true
+            - name: wolf-config
+              mountPath: /etc/wolf
+            - name: socket-dir
+              mountPath: /tmp/sockets
+            - name: docker-socket
+              mountPath: /var/run/docker.sock
+          securityContext:
+            privileged: true
+      volumes:
+        - name: nvidia-libs
+          emptyDir: {}
+        - name: wolf-config
+          persistentVolumeClaim:
+            claimName: wolf-config-pvc
+        - name: socket-dir
+          emptyDir: {}
+        - name: docker-socket
+          hostPath:
+            path: /var/run/docker.sock
+            type: Socket
