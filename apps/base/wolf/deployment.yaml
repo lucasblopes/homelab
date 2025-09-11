@@ -4,7 +4,6 @@ metadata:
   name: wolf
   labels:
     app: wolf
-  namespace: wolf
 spec:
   replicas: 1
   selector:

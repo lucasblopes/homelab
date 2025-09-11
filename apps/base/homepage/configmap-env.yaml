@@ -22,7 +22,7 @@ data:
   services.yaml: |
     - Homelab:
         - Mealie:
-            href: http://172.16.0.124:9000
+            href: https://mealie.bandicoot-bellatrix.ts.net
             description: Delicious recipies
 
     - Social:

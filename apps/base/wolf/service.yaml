@@ -3,10 +3,11 @@ kind: Service
 metadata:
   name: wolf
   namespace: wolf
-  annotations:
-    tailscale.com/expose: "true"
+  # annotations:
+  #   tailscale.com/expose: "true"
 spec:
-  type: NodePort
+  type: LoadBalancer
+  loadBalancerClass: tailscale
   ports:
     - port: 47984
       targetPort: 47984

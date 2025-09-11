@@ -6,8 +6,9 @@ resources:
   - secret.yaml
   - serviceaccount.yaml
   - service.yaml
-  # - ingress.yaml
+  - ingress.yaml
   - configmap-env.yaml
+  - storage.yaml
   # - config-secret.yaml
   - deployment.yaml
   - clusterrole.yaml

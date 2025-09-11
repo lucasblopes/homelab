@@ -4,7 +4,6 @@ metadata:
   labels:
     app: mealie
   name: mealie
-  namespace: mealie
 spec:
   replicas: 1
   selector:
@@ -16,13 +15,18 @@ spec:
         app: mealie
     spec:
       containers:
-        - image: ghcr.io/mealie-recipes/mealie:v3.0.2
+        - image: ghcr.io/mealie-recipes/mealie:v3.1.2
           name: mealie
           ports:
             - containerPort: 9000
           volumeMounts:
             - mountPath: /app/data
               name: mealie-data
+          env:
+          - name: ALLOWED_HOSTS
+            value: "mealie.bandicoot-bellatrix.ts.net,mealie"
+          - name: BASE_URL
+            value: "mealie.bandicoot-bellatrix.ts.net"
       volumes:
         - name: mealie-data
           persistentVolumeClaim:

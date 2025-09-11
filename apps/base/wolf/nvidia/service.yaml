@@ -6,7 +6,7 @@ metadata:
   annotations:
     tailscale.com/expose: "true"
 spec:
-  type: NodePort
+  type: ClusterIP # ClusterIP to access in te Tailnet
   ports:
     - port: 47984
       targetPort: 47984
