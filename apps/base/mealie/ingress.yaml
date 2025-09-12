@@ -2,14 +2,22 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: mealie
+  namespace: mealie
+  annotations:
+    tailscale.com/funnel: "true"
 spec:
-  defaultBackend:
-    service:
-      name: mealie
-      port:
-        number: 9000
   ingressClassName: tailscale
+  rules:
+  - host: mealie.bandicoot-bellatrix.ts.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: mealie
+            port:
+              number: 9000
   tls:
     - hosts:
-        - mealie
-
+        - mealie.bandicoot-bellatrix.ts.net

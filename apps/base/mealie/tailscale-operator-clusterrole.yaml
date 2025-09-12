@@ -1,0 +1,8 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tailscale-operator-service-reader
+rules:
+- apiGroups: [""]
+  resources: ["services", "endpointslices"]
+  verbs: ["get", "list", "watch"]

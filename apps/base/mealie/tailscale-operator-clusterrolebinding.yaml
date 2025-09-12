@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tailscale-operator-service-reader-binding
+subjects:
+- kind: ServiceAccount
+  name: tailscale-operator
+  namespace: tailscale
+roleRef:
+  kind: ClusterRole
+  name: tailscale-operator-service-reader
+  apiGroup: rbac.authorization.k8s.io
