@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: alpine-test-pod
+  namespace: registry
+spec:
+  containers:
+  - name: alpine
+    # Change this to your Tailnet DNS
+    image: registry.wyvern-palermo.ts.net/my-alpine:latest
+    command: ["echo", "Successfully pulled private image!"]
+  imagePullSecrets:
+  - name: registry-auth
+  restartPolicy: "Never"

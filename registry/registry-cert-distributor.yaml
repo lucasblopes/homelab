@@ -1,0 +1,92 @@
+# Obs.: Modify the Tailnet url and username/password
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: registry-cert-distributor
+  namespace: registry
+  labels:
+    app: registry-cert-distributor
+spec:
+  selector:
+    matchLabels:
+      name: registry-cert-distributor
+  template:
+    metadata:
+      labels:
+        name: registry-cert-distributor
+    spec:
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+      
+      hostNetwork: true
+      hostPID: true
+      
+      initContainers:
+      - name: cert-installer
+        image: alpine:latest
+        securityContext:
+          privileged: true
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          set -ex
+          # Change this to your Tailnet DNS
+          REGISTRY_DNS="registry.wyvern-palermo.ts.net"
+          
+          # Create cert directory
+          mkdir -p /host/etc/rancher/k3s/
+          
+          # Copy CA certificate
+          cp /certs/ca.crt /host/etc/rancher/k3s/registry-ca.crt
+          
+          # Create or update registries.yaml
+          cat > /host/etc/rancher/k3s/registries.yaml <<EOF
+          mirrors:
+            "${REGISTRY_DNS}":
+              endpoint:
+                - "https://${REGISTRY_DNS}"
+          
+          configs:
+            "${REGISTRY_DNS}":
+              auth:
+                username: <username>
+                password: <password>
+              tls:
+                ca_file: /etc/rancher/k3s/registry-ca.crt
+          EOF
+          
+          echo "Configuration installed on $(hostname)"
+          cat /host/etc/rancher/k3s/registries.yaml
+          
+          # Detect if this is a server or agent node and restart
+          if [ -f /host/etc/systemd/system/k3s.service ]; then
+            echo "Restarting k3s server..."
+            nsenter --target 1 --mount --uts --ipc --net --pid -- systemctl restart k3s || true
+          elif [ -f /host/etc/systemd/system/k3s-node.service ]; then
+            echo "Restarting k3s-agent..."
+            nsenter --target 1 --mount --uts --ipc --net --pid -- systemctl restart k3s-node || true
+          fi
+        volumeMounts:
+        - name: host-etc
+          mountPath: /host/etc
+        - name: registry-ca
+          mountPath: /certs
+          readOnly: true
+      
+      containers:
+      - name: sleeper
+        image: alpine:latest
+        command: ["sleep", "infinity"]
+      
+      volumes:
+      - name: host-etc
+        hostPath:
+          path: /etc
+      - name: registry-ca
+        configMap:
+          name: registry-ca

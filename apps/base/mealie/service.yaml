@@ -4,6 +4,8 @@ metadata:
   name: mealie
   labels:
     app: mealie
+  annotations:
+    tailscale.com/funnel: "true"
 spec:
   type: ClusterIP
   ports:
