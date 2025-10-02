@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: tailscale
   rules:
-  - host: mealie.bandicoot-bellatrix.ts.net
+  # - host: mealie.bandicoot-bellatrix.ts.net
     http:
       paths:
       - path: /
@@ -18,6 +18,6 @@ spec:
             name: mealie
             port:
               number: 9000
-  tls:
-    - hosts:
-        - mealie.bandicoot-bellatrix.ts.net
+  # tls:
+  #   - hosts:
+  #       - mealie.bandicoot-bellatrix.ts.net
