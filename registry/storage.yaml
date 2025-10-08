@@ -8,7 +8,8 @@ spec:
     - ReadWriteOnce
   # IMPORTANT: You must specify a StorageClass that exists in your cluster.
   # Find available StorageClasses by running: kubectl get sc
-  storageClassName: "local-path"
+  #storageClassName: longhorn
+  storageClassName: local-path
   resources:
     requests:
       storage: 50Gi
