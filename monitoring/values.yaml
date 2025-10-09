@@ -1,2 +1,20 @@
+# values.yaml
+
 grafana:
-  adminPassword: admin123
+  admin:
+    existingSecret: grafana-admin-credentials
+    userKey: admin-user
+    passwordKey: admin-password
+
+# This section is likely for Prometheus Operator's Prometheus instance
+prometheus:
+  prometheusSpec:
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          # Updated storageClassName to use Longhorn
+          storageClassName: longhorn
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi

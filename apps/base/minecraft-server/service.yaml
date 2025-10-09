@@ -1,17 +1,17 @@
 # MetalLB LoadBalancer for local network access
-apiVersion: v1
-kind: Service
-metadata:
-  name: minecraft-metallb
-spec:
-  type: LoadBalancer
-  ports:
-    - port: 25565
-      targetPort: 25565
-      protocol: TCP
-      name: minecraft
-  selector:
-    app: minecraft
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: minecraft-metallb
+# spec:
+#   type: LoadBalancer
+#   ports:
+#     - port: 25565
+#       targetPort: 25565
+#       protocol: TCP
+#       name: minecraft
+#   selector:
+#     app: minecraft
 ---
 # Tailscale LoadBalancer for VPN access
 apiVersion: v1
@@ -26,6 +26,24 @@ spec:
   ports:
     - port: 25565
       targetPort: 25565
+      protocol: TCP
+      name: minecraft
+  selector:
+    app: minecraft
+---
+# RCON Tailscale access
+apiVersion: v1
+kind: Service
+metadata:
+  name: minecraft-rcon
+  annotations:
+    tailscale.com/hostname: "mc-rcon"
+spec:
+  type: LoadBalancer
+  loadBalancerClass: tailscale
+  ports:
+    - port: 25575
+      targetPort: 25575
       protocol: TCP
       name: minecraft
   selector:

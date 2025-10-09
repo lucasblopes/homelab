@@ -1,5 +1,5 @@
 # https://docs.k3s.io/storage
-# OBS.: make sure that open-iscsi and nfs-common is installed in all nodes
+# OBS.: make sure that open-iscsi and nfs-common (nfs-utils) is installed in all nodes
 #kubectl apply -f https://raw.githubusercontent.com/longhorn/longhorn/v1.8.1/deploy/longhorn.yaml
 
 helm repo add longhorn https://charts.longhorn.io

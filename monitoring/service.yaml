@@ -6,7 +6,6 @@ metadata:
   name: grafana
   namespace: monitoring
   annotations:
-    tailscale.com/funnel: "true"
 spec:
   ports:
     - port: 3000
