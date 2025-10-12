@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: wol
+  namespace: kube-system # Use a system namespace
+spec:
+  selector:
+    matchLabels:
+      app: wol
+  template:
+    metadata:
+      labels:
+        app: wol
+    spec:
+      hostPID: true # Required to access host network details
+      hostNetwork: true # Required for WOL broadcast
+      tolerations:
+      - key: node-role.kubernetes.io/master # Run even on master nodes (optional but good practice)
+        operator: Exists
+        effect: NoSchedule
+      containers:
+      - name: wol
+        image: alpine/curl:latest
+        securityContext:
+          privileged: true # Required for true host network access
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          while true; do
+            # Replace the shell script logic here (simplified ping check)
+            ping -c 3 -W 2 172.16.0.250 > /dev/null 2>&1
+            if [ $? -ne 0 ]; then
+              echo "Master unreachable. Sending WOL packets..."
+              /usr/bin/wakeonlan AA:BB:CC:DD:EE:F1 BB:CC:DD:EE:F2
+            else
+              echo "Master reachable."
+            fi
+            sleep 300 # Sleep for 5 minutes (300 seconds)
+          done
+        volumeMounts:
+          - name: wol-bin
+            mountPath: /usr/bin/wakeonlan
+            readOnly: true
+      volumes:
+        - name: wol-bin
+          hostPath:
+            path: /usr/bin/wakeonlan # Path to the wakeonlan binary on the host
+            type: File
