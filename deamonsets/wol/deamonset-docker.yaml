@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: wol-agent
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: wol-agent
+  template:
+    metadata:
+      labels:
+        app: wol-agent
+    spec:
+      # These settings are essential for the WOL agent to function:
+      # hostPID: Allows the container to see the host's process space (often useful but less critical here).
+      # hostNetwork: Allows the container to use the host's network stack and send raw packets.
+      hostPID: true
+      hostNetwork: true
+      # Tolerations are for running on the control-plane node (master)
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+      containers:
+      - name: wol
+        image: your-registry/wol-agent:v1.0.0
+        
+        # ESSENTIAL for network operations like WOL
+        securityContext:
+          privileged: true 
