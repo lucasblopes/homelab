@@ -4,12 +4,8 @@ metadata:
   name: registry-data-pvc
   namespace: registry
 spec:
-  accessModes:
-    - ReadWriteOnce
-  # IMPORTANT: You must specify a StorageClass that exists in your cluster.
-  # Find available StorageClasses by running: kubectl get sc
-  #storageClassName: longhorn
-  storageClassName: local-path
+  storageClassName: nfs-csi
+  accessModes: [ReadWriteOnce]
   resources:
     requests:
       storage: 50Gi

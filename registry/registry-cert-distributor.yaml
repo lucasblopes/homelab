@@ -36,7 +36,7 @@ spec:
         - |
           set -ex
           # Change this to your Tailnet DNS
-          REGISTRY_DNS="registry.wyvern-palermo.ts.net"
+          REGISTRY_DNS="xxxx"
           
           # Create cert directory
           mkdir -p /host/etc/rancher/k3s/
@@ -55,7 +55,7 @@ spec:
             "${REGISTRY_DNS}":
               auth:
                 username: <username>
-                password: <password>
+                password: <pasword>
               tls:
                 ca_file: /etc/rancher/k3s/registry-ca.crt
           EOF

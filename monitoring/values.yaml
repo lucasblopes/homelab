@@ -12,9 +12,8 @@ prometheus:
     storageSpec:
       volumeClaimTemplate:
         spec:
-          # Updated storageClassName to use Longhorn
-          storageClassName: longhorn
-          accessModes: ["ReadWriteOnce"]
+          storageClassName: nfs-csi
+          accessModes: [ReadWriteOnce]
           resources:
             requests:
               storage: 10Gi

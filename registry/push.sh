@@ -1,5 +1,5 @@
-# Change this to your Tailnet DNS
-export REGISTRY_HOST="registry.wyvern-palermo.ts.net"
+# Change this to your DNS
+export REGISTRY_HOST="xxxx"
 
 # Check if you need port 5000 - try without first
 # If Tailscale LoadBalancer is configured correctly, it should work without the port
