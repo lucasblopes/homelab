@@ -6,8 +6,8 @@ metadata:
 spec:
   containers:
   - name: alpine
-    # Change this to your DNS
-    image: xxxx/my-alpine:latest
+    # Change this to your registry
+    image: <registry>/my-alpine:latest
     command: ["echo", "Successfully pulled private image!"]
   imagePullSecrets:
   - name: registry-auth

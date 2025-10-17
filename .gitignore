@@ -209,5 +209,6 @@ __marimo__/
 # Password and certs
 htpasswd
 auth*
+auth/
 *.crt
 *.key

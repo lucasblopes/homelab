@@ -24,7 +24,7 @@ spec:
         effect: NoSchedule
       containers:
       - name: wol
-        image: your-registry/wol-agent:v1.0.0
+        image: <registry>/wol:latest # Change to your registry
         
         # ESSENTIAL for network operations like WOL
         securityContext:

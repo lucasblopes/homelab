@@ -1,4 +1,4 @@
-# Obs.: Modify the Tailnet url and username/password
+# Obs.: Modify the registry ip and username/password
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -35,8 +35,8 @@ spec:
         args:
         - |
           set -ex
-          # Change this to your Tailnet DNS
-          REGISTRY_DNS="xxxx"
+          # Change this to your registy ip
+          REGISTRY_DNS="<ip>"
           
           # Create cert directory
           mkdir -p /host/etc/rancher/k3s/
@@ -54,8 +54,8 @@ spec:
           configs:
             "${REGISTRY_DNS}":
               auth:
-                username: <username>
-                password: <pasword>
+                username: ----
+                password: ----
               tls:
                 ca_file: /etc/rancher/k3s/registry-ca.crt
           EOF
