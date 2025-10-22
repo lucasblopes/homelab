@@ -1,0 +1,157 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jellyfin-ingress
+  namespace: media
+  annotations:
+    tailscale.com/funnel: "true"
+spec:
+  ingressClassName: tailscale
+  rules:
+  - host: jellyfin.custom-dns
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: jellyfin
+            port:
+              name: http
+  tls:
+    - hosts:
+        - jellyfin.custom-dns
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sonarr-ingress
+  namespace: media
+spec:
+  ingressClassName: tailscale
+  rules:
+  - host: sonarr.dns
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: sonarr
+            port:
+              name: http
+  tls:
+    - hosts:
+        - sonarr.custom-dns
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: radarr-ingress
+  namespace: media
+spec:
+  ingressClassName: tailscale
+  rules:
+  - host: radarr.custom-dns
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: radarr
+            port:
+              name: http
+  tls:
+    - hosts:
+        - radarr.custom-dns
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: prowlarr-ingress
+  namespace: media
+spec:
+  ingressClassName: tailscale
+  rules:
+  - host: prowlarr.custom-dns
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: prowlarr
+            port:
+              name: http
+  tls:
+    - hosts:
+        - prowlarr.custom-dns
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: qbittorrent-ingress
+  namespace: media
+spec:
+  ingressClassName: tailscale
+  rules:
+  - host: qbitt.custom-dns
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: qbittorrent
+            port:
+              name: http
+  tls:
+    - hosts:
+        - qbitt.custom-dns
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jellyseerr-ingress
+  namespace: media
+  annotations:
+    tailscale.com/funnel: "true"
+spec:
+  ingressClassName: tailscale
+  rules:
+  - host: jellyseerr.custom-dns
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: jellyseerr
+            port:
+              name: http
+  tls:
+    - hosts:
+        - jellyseerr.custom-dns
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bazarr-ingress
+  namespace: media
+spec:
+  ingressClassName: tailscale
+  rules:
+  - host: bazarr.custom-dns
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: bazarr
+            port:
+              name: http
+  tls:
+    - hosts:
+        - bazarr.custom-dns

@@ -10,7 +10,7 @@ metadata:
 spec:
   ingressClassName: tailscale
   rules:
-  - host: grafana.wyvern-palermo.ts.net
+  - host: grafana.custom-dns
     http:
       paths:
       - path: /
@@ -22,5 +22,5 @@ spec:
               number: 3000
   tls:
     - hosts:
-        - grafana.wyvern-palermo.ts.net
+        - grafana.custom-dns
 

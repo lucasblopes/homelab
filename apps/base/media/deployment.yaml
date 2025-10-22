@@ -1,0 +1,339 @@
+## ----------------- JELLYFIN ----------------- ##
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyfin
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyfin
+  template:
+    metadata:
+      labels:
+        app: jellyfin
+    spec:
+      containers:
+      - name: jellyfin
+        image: jellyfin/jellyfin
+        ports:
+        - containerPort: 8096
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        - name: media
+          mountPath: /data
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: jellyfin-config
+      - name: media
+        persistentVolumeClaim:
+          claimName: media-data
+---
+## ----------------- SONARR ----------------- ##
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sonarr
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarr
+  template:
+    metadata:
+      labels:
+        app: sonarr
+    spec:
+      initContainers:
+      - name: set-config-perms
+        image: busybox
+        command: ['sh', '-c', 'mkdir /data/tv; chown 1000:1000 /data/tv']
+        securityContext:
+          runAsUser: 0 # Run as root to perform the chown operation
+        volumeMounts:
+          # Crucial: Must mount the volume the permissions need to be set on
+          - name: media
+            mountPath: /data
+      containers:
+      - name: sonarr
+        image: lscr.io/linuxserver/sonarr:latest
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "America/Moncton"
+        ports:
+        - containerPort: 8989
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        - name: media
+          mountPath: /data
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: sonarr-config
+      - name: media
+        persistentVolumeClaim:
+          claimName: media-data
+---
+## ----------------- RADARR ----------------- ##
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: radarr
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: radarr
+  template:
+    metadata:
+      labels:
+        app: radarr
+    spec:
+      initContainers:
+      - name: set-config-perms
+        image: busybox
+        # command: ['sh', '-c', 'chown 1000:1000 /data/movies /data/downloads']
+        command: ['sh', '-c', 'mkdir /data/movies; chown 1000:1000 /data/movies']
+        securityContext:
+          runAsUser: 0 # Run as root to perform the chown operation
+        volumeMounts:
+          # Crucial: Must mount the volume the permissions need to be set on
+          - name: media
+            mountPath: /data
+      containers:
+      - name: radarr
+        image: lscr.io/linuxserver/radarr:latest
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "America/Moncton"
+        ports:
+        - containerPort: 7878
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        - name: media
+          mountPath: /data
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: radarr-config
+      - name: media
+        persistentVolumeClaim:
+          claimName: media-data
+---
+## ----------------- PROWLARR ----------------- ##
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prowlarr
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prowlarr
+  template:
+    metadata:
+      labels:
+        app: prowlarr
+    spec:
+      containers:
+      - name: prowlarr
+        image: lscr.io/linuxserver/prowlarr:latest
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "America/Moncton"
+        ports:
+        - containerPort: 9696
+        volumeMounts:
+        - name: config
+          mountPath: /config
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: prowlarr-config
+---
+## ----------------- JELLYSEERR ----------------- ##
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jellyseerr
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jellyseerr
+  template:
+    metadata:
+      labels:
+        app: jellyseerr
+    spec:
+      containers:
+      - name: jellyseerr
+        image: fallenbagel/jellyseerr:latest
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "America/Moncton"
+        - name: LOG_LEVEL
+          value: "info"
+        ports:
+        - containerPort: 5055
+        volumeMounts:
+        - name: config
+          mountPath: /app/config
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: jellyseerr-config
+---
+## ----------------- BAZARR ----------------- ##
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bazarr
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bazarr
+  template:
+    metadata:
+      labels:
+        app: bazarr
+    spec:
+      containers:
+      - name: bazarr
+        image: lscr.io/linuxserver/bazarr:latest
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "America/Moncton"
+        ports:
+        - containerPort: 6767
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        - name: media
+          mountPath: /media
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: bazarr-config
+      - name: media
+        persistentVolumeClaim:
+          claimName: media-data
+---
+## ----------------- QBITTORRENT ----------------- ##
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qbittorrent
+  namespace: media
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qbittorrent
+  template:
+    metadata:
+      labels:
+        app: qbittorrent
+    spec:
+      # initContainers:
+      # - name: set-config-perms
+      #   image: busybox
+      #   command: ['sh', '-c', 'mkdir /data/downloads; chown 1000:1000 /data/downloads']
+      #   securityContext:
+      #     runAsUser: 0 # Run as root to perform the chown operation
+      #   volumeMounts:
+      #     # Crucial: Must mount the volume the permissions need to be set on
+      #     - name: media-downloads
+      #       mountPath: /data
+      containers:
+      # - name: gluetun
+      #   image: qmcgaw/gluetun
+      #   env:
+      #   - name: VPN_SERVICE_PROVIDER
+      #     value: "protonvpn"
+      #   - name: VPN_TYPE
+      #     value: "wireguard"
+      #   - name: WIREGUARD_PRIVATE_KEY
+      #     valueFrom:
+      #       secretKeyRef:
+      #         name: protonvpn-secrets
+      #         key: WIREGUARD_PRIVATE_KEY
+      #   - name: WIREGUARD_PUBLIC_KEY
+      #     valueFrom:
+      #       secretKeyRef:
+      #         name: protonvpn-secrets
+      #         key: WIREGUARD_PUBLIC_KEY
+      #   - name: SERVER_COUNTRIES
+      #     value: "United States"
+      #   #- name: SERVER_CITIES
+      #   #  value: "Los Angeles"
+      #   - name: VPN_PORT_FORWARDING
+      #     value: "on"
+      #   - name: PORT_FORWARD_ONLY
+      #     value: "on"
+      #   securityContext:
+      #     capabilities:
+      #       add:
+      #         - NET_ADMIN
+      #   volumeMounts:
+      #     - name: gluetun-config
+      #       mountPath: /gluetun
+      - name: qbittorrent
+        image: lscr.io/linuxserver/qbittorrent:latest
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "America/Moncton"
+        - name: WEBUI_PORT
+          value: "8080"
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        - name: media-downloads
+          mountPath: /data
+      volumes:
+      - name: config
+        persistentVolumeClaim:
+          claimName: qbitt-config
+      - name: media-downloads
+        persistentVolumeClaim:
+          claimName: media-data
+      # - name: gluetun-config
+      #   persistentVolumeClaim:
+      #     claimName: gluetun-config
