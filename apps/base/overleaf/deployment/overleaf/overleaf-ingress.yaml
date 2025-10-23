@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: overleaf
+  namespace: overleaf
+  annotations:
+    tailscale.com/funnel: "true"
+spec:
+  ingressClassName: tailscale
+  rules:
+  - host: overleaf.custom-dns
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: sharelatex
+            port:
+              number: 80
+  tls:
+    - hosts:
+        - overleaf.custom-dns
+
