@@ -1,14 +1,38 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: jellyfin-ingress
+  name: emby-ingress
   namespace: media
   annotations:
-    tailscale.com/funnel: "true"
+    tailscale.com/expose: "true"
 spec:
   ingressClassName: tailscale
   rules:
-  - host: jellyfin.custom-dns
+  - host: emby.dns
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: emby
+            port:
+              name: http
+  tls:
+    - hosts:
+        - emby.dns
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jellyfin-ingress
+  namespace: media
+  annotations:
+    tailscale.com/expose: "true"
+spec:
+  ingressClassName: tailscale
+  rules:
+  - host: jellyfin.dns
     http:
       paths:
       - path: /
@@ -20,7 +44,7 @@ spec:
               name: http
   tls:
     - hosts:
-        - jellyfin.custom-dns
+        - jellyfin.dns
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -42,7 +66,29 @@ spec:
               name: http
   tls:
     - hosts:
-        - sonarr.custom-dns
+        - sonarr.dns
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sonarr-4k-ingress
+  namespace: media
+spec:
+  ingressClassName: tailscale
+  rules:
+  - host: sonarr-4k.dns
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: sonarr-4k
+            port:
+              name: http
+  tls:
+    - hosts:
+        - sonarr-4k.dns
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -52,7 +98,7 @@ metadata:
 spec:
   ingressClassName: tailscale
   rules:
-  - host: radarr.custom-dns
+  - host: radarr.dns
     http:
       paths:
       - path: /
@@ -64,7 +110,29 @@ spec:
               name: http
   tls:
     - hosts:
-        - radarr.custom-dns
+        - radarr.dns
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: radarr-4k-ingress
+  namespace: media
+spec:
+  ingressClassName: tailscale
+  rules:
+  - host: radarr-4k.dns
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: radarr-4k
+            port:
+              name: http
+  tls:
+    - hosts:
+        - radarr-4k.dns
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -74,7 +142,7 @@ metadata:
 spec:
   ingressClassName: tailscale
   rules:
-  - host: prowlarr.custom-dns
+  - host: prowlarr.dns
     http:
       paths:
       - path: /
@@ -86,7 +154,7 @@ spec:
               name: http
   tls:
     - hosts:
-        - prowlarr.custom-dns
+        - prowlarr.dns
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -96,7 +164,7 @@ metadata:
 spec:
   ingressClassName: tailscale
   rules:
-  - host: qbitt.custom-dns
+  - host: qbitt.dns
     http:
       paths:
       - path: /
@@ -108,7 +176,7 @@ spec:
               name: http
   tls:
     - hosts:
-        - qbitt.custom-dns
+        - qbitt.dns
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -116,11 +184,12 @@ metadata:
   name: jellyseerr-ingress
   namespace: media
   annotations:
+    # tailscale.com/expose: "true"
     tailscale.com/funnel: "true"
 spec:
   ingressClassName: tailscale
   rules:
-  - host: jellyseerr.custom-dns
+  - host: jellyseerr.dns
     http:
       paths:
       - path: /
@@ -132,7 +201,7 @@ spec:
               name: http
   tls:
     - hosts:
-        - jellyseerr.custom-dns
+        - jellyseerr.dns
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -142,7 +211,7 @@ metadata:
 spec:
   ingressClassName: tailscale
   rules:
-  - host: bazarr.custom-dns
+  - host: bazarr.dns
     http:
       paths:
       - path: /
@@ -154,4 +223,4 @@ spec:
               name: http
   tls:
     - hosts:
-        - bazarr.custom-dns
+        - bazarr.dns

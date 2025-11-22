@@ -3,8 +3,9 @@ kind: Kustomization
 namespace: media
 resources:
   - namespace.yaml
-  - deployment.yaml
+  - pvs.yaml
   - storage.yaml
+  - deployment.yaml
   - service.yaml
   - ingress.yaml
 
